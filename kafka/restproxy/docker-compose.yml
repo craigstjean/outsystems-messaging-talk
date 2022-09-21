@@ -1,0 +1,40 @@
+---
+version: '3.5'
+services:
+  zookeeper3:
+    image: confluentinc/cp-zookeeper:7.2.1
+    container_name: zookeeper3
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker3:
+    image: confluentinc/cp-kafka:7.2.1
+    container_name: broker3
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper3
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper3:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker3:9092,PLAINTEXT_INTERNAL://broker3:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+  # https://github.com/confluentinc/cp-demo/blob/7.2.1-post/docker-compose.yml
+  restproxy:
+    image: confluentinc/cp-kafka-rest:7.2.1
+    depends_on:
+      - broker3
+    container_name: restproxy
+    ports:
+      - "8086:8086"
+    environment:
+      KAFKA_REST_HOST_NAME: restproxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: PLAINTEXT://broker3:9092
+      KAFKA_REST_LISTENERS: http://0.0.0.0:8086
+      KAFKA_REST_CLIENT_SECURITY_PROTOCOL: PLAINTEXT
+
