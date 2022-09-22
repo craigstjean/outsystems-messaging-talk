@@ -25,3 +25,11 @@ curl -k https://localhost:9443/ibmmq/rest/v1/messaging/qmgr/QM1/queue/MSGQ/messa
 # Read and delete message from queue
 curl -k https://localhost:9443/ibmmq/rest/v1/messaging/qmgr/QM1/queue/MSGQ/message -X DELETE -u app:passw0rd -H "ibm-mq-rest-csrf-token: value"
 
+# Create request and response queues
+curl -k https://localhost:9443/ibmmq/rest/v1/admin/qmgr/QM1/queue -X POST -u admin:passw0rd -H "ibm-mq-rest-csrf-token: value" -H "Content-Type: application/json" --data "{\"name\":\"REQ.HELLO\"}"
+curl -k https://localhost:9443/ibmmq/rest/v1/admin/qmgr/QM1/queue -X POST -u admin:passw0rd -H "ibm-mq-rest-csrf-token: value" -H "Content-Type: application/json" --data "{\"name\":\"RES.HELLO\"}"
+
+# Set permissions to user 'app'
+docker exec -ti QM1 setmqaut -m QM1 -n REQ.HELLO -t queue -p app +inq +get +put +browse
+docker exec -ti QM1 setmqaut -m QM1 -n RES.HELLO -t queue -p app +inq +get +put +browse
+
