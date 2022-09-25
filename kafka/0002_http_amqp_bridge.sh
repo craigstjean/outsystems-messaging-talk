@@ -2,12 +2,12 @@
 
 set -e
 
-docker-compose up -d -f bridge/docker-compose.yml
+docker-compose -f bridge/docker-compose.yml up -d
 
 sleep 60
 
-docker exec broker \
-    kafka-topics --bootstrap-server broker:9092 \
+docker exec broker2 \
+    kafka-topics --bootstrap-server broker2:9092 \
         --create \
         --partitions 3 \
         --topic quickstart

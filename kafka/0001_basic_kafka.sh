@@ -2,7 +2,7 @@
 
 set -e
 
-docker-compose up -d -f basic/docker-compose.yml
+docker-compose -f basic/docker-compose.yml up -d
 
 sleep 60
 
